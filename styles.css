@@ -1,0 +1,147 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: #252525;
+}
+
+
+
+#theCanvas{
+    border: 1px solid gray;
+    width: 500px;
+    height: 500px;
+
+}
+
+#loadingMessage
+{
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    z-index: 100;
+    font-size: 50px;
+}
+
+#navbar{
+    background-color: #474747;
+    margin-top: 5;
+    margin-bottom: 5;
+    
+}
+
+.canvasContainer{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 45px;
+}
+
+#navbar{
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+
+a{
+    color: #c0c0c0;
+    flex-direction: row;
+    justify-content: space-between;
+    text-decoration: none;
+    height: 150px;
+}
+
+li{
+    display: inline-block;
+    margin-right: 20px;
+    font-family: "Open Sans", Sans-Serif;
+    font-size: 13px;
+    
+    
+}
+
+#DD-contents{
+    margin-left: 20px;
+    margin-right: 0;
+}
+
+ul{
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+#dropdowns{
+    display: flex;
+}
+
+#buttonContents{
+    display: flex;
+    justify-content: center;
+    margin-top: 60px;
+    margin-bottom: 0;
+    
+}
+
+.button1{
+        background-color: transparent;
+        border: 1.5px solid grey;
+        color: #c0c0c0;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        font-family: "Open Sans", Sans-Serif;
+        margin-right: 20px;
+        border-radius: 25px;
+}
+
+.button2{
+    background-color: transparent;
+        border: 1.5px solid gray;
+        color: #c0c0c0;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        font-family: "Open Sans", Sans-Serif;
+        margin-left: 20px;
+        border-radius: 25px;
+}
+
+p{
+    color: white;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0px;
+    margin-top: 60px;
+    font-size: 50px;
+    font-family: Circular, Arial, sans-serif;
+    font-weight: bold;
+}
+
+#container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#photobooth{
+    width: 80vw;
+}
+
+#sidebar{
+    display: flex;
+}
+
+
+

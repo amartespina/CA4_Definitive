@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <header>
+      <div id="navbar">
+        <div id="dropdowns">
+          <ul class="dropdown-contents">
+            <li id="DD-contents"><a href="">File</a></li>
+            <li id="DD-contents"><a href="">Edit</a></li>
+            <li id="DD-contents"><a href="">Filter</a></li>
+          </ul>
+        </div>
+        <ul class="contents">
+          <li><a href="">Home</a></li>
+          <li><a href="">Canvas</a></li>
+        </ul>
+      </div>
+    </header>
+    <div id="container">
+
+    <div id="photobooth">
+      <div id="logo">
+        <p>PhotoBooth</p>
+      </div>
+
+      <div id="buttonContents">
+        <button class="button1">Image</button>
+        <button class="button2">Delete Image</button>
+      </div>
+
+      <div class="canvasContainer">
+        <canvas id="theCanvas" width="500" height="500"></canvas>
+      </div>
+    </div>
+    <div id="sidebar">
+      <label class="Red" for="brightnesRed">Red:</label>
+      <input type="range" id="brightnesRed" value="0" min="-255" max="255" onchange="updateBrightnesLevel()">
+
+      <label class="Green" for="brightnesGreen">Green:</label>
+      <input type="range" id="brightnesGreen" value="0" min="-255" max="255" onchange="updateBrightnesLevel()">
+
+      <label class="Blue" for="brightnesBlue">Blue:</label>
+      <input type="range" id="brightnesBlue" value="0" min="-255" max="255" onchange="updateBrightnesLevel()">
+    </div>
+</div>
+  </body>
+</html>

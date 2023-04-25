@@ -12,8 +12,8 @@ img_01.src = "images/hulk.jpg"
 
 
 let images = [
-    {src: img_00, x: 100, y: 100, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0,  greyscale: false},
-    {src: img_01, x: 300, y: 300, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0, greyscale: false}]
+    {src: img_00, x: 100, y: 100, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0,  greyscale: false, invert: false},
+    {src: img_01, x: 300, y: 300, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0, greyscale: false, invert: false}]
 
 let currentImageIndex = 0
 
@@ -65,8 +65,7 @@ function renderCanvas(){
             
             
         }
-        console.log("brillo " + images[currentImageIndex].brightness)
-        console.log("brilloazul " + images[currentImageIndex].brightnessLevelBlue)
+
         
 
         
@@ -86,6 +85,22 @@ function renderCanvas(){
 
             offscreenCanvasCtx.putImageData(imageData, image.x, image.y)
         }
+
+        if (image.invert){
+            console.log("image.invert")
+            imageData = offscreenCanvasCtx.getImageData(image.x, image.y, image.width, image.height)
+            for (let i = 0; i < imageData.data.length; i += 4)
+            {
+                thisgreyscale = (imageData.data[i + 0] + imageData.data[i + 1] + imageData.data[i + 2]) / 3
+                imageData.data[i + 0] = 255 - imageData.data[i + 0]
+                imageData.data[i + 1] = 255 - imageData.data[i + 0]
+                imageData.data[i + 2] = 255 - imageData.data[i + 0]
+                imageData.data[i + 3] = 255
+                offscreenCanvasCtx.putImageData(imageData, image.x, image.y)
+        
+
+        }
+    }
 
         
         
@@ -212,6 +227,13 @@ function toggleGreyscale(greyscaleIsSet){
     images[currentImageIndex].greyscale = greyscaleIsSet
     renderCanvas()                
 }
+
+function invert(invertIsSet){
+    images[currentImageIndex].invert = invertIsSet
+    renderCanvas()                
+}
+
+
 
 Math.radians = function (degrees){
     return degrees * Math.PI / 180

@@ -59,9 +59,9 @@ function renderCanvas(){
     
         for (let i = 0; i < imageData.data.length; i += 4)
         {
-            imageData.data[i + 0] = imageData.data[i + 0] + image.brightness
-            imageData.data[i + 1] = imageData.data[i + 1] + image.brightness
-            imageData.data[i + 2] = imageData.data[i + 2] + image.brightness
+            imageData.data[i + 0] = imageData.data[i + 0] + image.brightness + brightnessLevelRed
+            imageData.data[i + 1] = imageData.data[i + 1] + image.brightness + brightnessLevelGreen
+            imageData.data[i + 2] = imageData.data[i + 2] + image.brightness + brightnessLevelBlue
             imageData.data[i + 3] = 255
         }
         
@@ -93,6 +93,15 @@ function renderCanvas(){
         ctx.restore()
     })
 }
+
+function updateBrightnessLevel()
+{
+    brightnessLevelRed = parseInt(document.getElementById("brightnessRed").value)
+    brightnessLevelGreen = parseInt(document.getElementById("brightnessGreen").value)
+    brightnessLevelBlue = parseInt(document.getElementById("brightnessBlue").value)
+    renderCanvas()
+}
+
 function mouseWheelHandler(e)
 {
     if (currentImageIndex !== null)
@@ -139,9 +148,6 @@ function mousedownHandler(e)
         }
     }
 }
-
-
-
 
 function moveHandler(e){
     if (currentImageIndex !== null && e.which === 1){ //left mouse button

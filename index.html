@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css" />   
     <script src="script.js"></script>
     <title>Document</title>
   </head>
@@ -37,9 +37,10 @@
       </div>
 
       <div class="canvasContainer">
-        <canvas id="theCanvas" width="500" height="500"></canvas>
+        <canvas id="canvas" width="500" height="500"></canvas>
       </div>
     </div>
+    <!--
     <div id="sidebar">
       <label class="Red" for="brightnesRed">Red:</label>
       <input type="range" id="brightnesRed" value="0" min="-255" max="255" onchange="updateBrightnesLevel()">
@@ -50,7 +51,25 @@
       <label class="Blue" for="brightnesBlue">Blue:</label>
       <input type="range" id="brightnesBlue" value="0" min="-255" max="255" onchange="updateBrightnesLevel()">
     </div>
-</div>
+-->
+    <div> Image Filters <br>
+      <label>Brightness</label><input type="range" value="0" min="-255" max="255" onchange="setBrightness(this.value)" /><br/>
+      <label>Greyscale</label><input type="checkbox" onchange="toggleGreyscale(this.checked)" /><br> 
+      Sepia <br> 
+      Invert <br> 
+      Posterise <br>
+    </div>
+
+    <br> <br> <br> 
+    <div>
+      <label>Rotate</label><input type="range" value="0" min="0" max="360" onchange="setRotationDegrees(this.value)" /><br/>
+    </div>
+    <br><br><br>
+    <div> 
+      <label for="brightnessRed">Red</label><input type="range" id="brightnessRed" value="0" min="-255" max="255" onchange = "updateBrightnessLevel()"/>
+      <label for="brightnessGreen">Green</label><input type="range" id="brightnessGreen" value="0" min="-255" max="255" onchange = "updateBrightnessLevel()"/>
+      <label for="brightnessBlue">Blue</label><input type="range" id="brightnessBlue" value="0" min="-255" max="255" onchange = "updateBrightnessLevel()"/>
+    </div>
   </body>
 
 </html>

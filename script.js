@@ -9,13 +9,11 @@ img_00.src = "images/spiderman.jpeg"
 let img_01 = new Image()
 img_01.src = "images/hulk.jpg"
 
-let brightnessLevelRed = 0
-let brightnessLevelGreen = 0
-let brightnessLevelBlue = 0
+
 
 let images = [
-    {src: img_00, x: 100, y: 100, width: 150, height: 150, rotation: 0, brightness: 0, greyscale: false},
-    {src: img_01, x: 300, y: 300, width: 150, height: 150, rotation: 0, brightness: 0, greyscale: false}]
+    {src: img_00, x: 100, y: 100, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0,  greyscale: false},
+    {src: img_01, x: 300, y: 300, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0, greyscale: false}]
 
 let currentImageIndex = 0
 
@@ -59,11 +57,18 @@ function renderCanvas(){
     
         for (let i = 0; i < imageData.data.length; i += 4)
         {
-            imageData.data[i + 0] = imageData.data[i + 0] + image.brightness + brightnessLevelRed
-            imageData.data[i + 1] = imageData.data[i + 1] + image.brightness + brightnessLevelGreen
-            imageData.data[i + 2] = imageData.data[i + 2] + image.brightness + brightnessLevelBlue
+
+            imageData.data[i + 0] = imageData.data[i + 0] + image.brightness + image.brightnessLevelRed
+            imageData.data[i + 1] = imageData.data[i + 1] + image.brightness + image.brightnessLevelGreen
+            imageData.data[i + 2] = imageData.data[i + 2] + image.brightness + image.brightnessLevelBlue
             imageData.data[i + 3] = 255
+            
+            
         }
+        console.log("brillo " + images[currentImageIndex].brightness)
+        console.log("brilloazul " + images[currentImageIndex].brightnessLevelBlue)
+        
+
         
         offscreenCanvasCtx.putImageData(imageData, image.x, image.y)
     
@@ -94,13 +99,8 @@ function renderCanvas(){
     })
 }
 
-function updateBrightnessLevel()
-{
-    brightnessLevelRed = parseInt(document.getElementById("brightnessRed").value)
-    brightnessLevelGreen = parseInt(document.getElementById("brightnessGreen").value)
-    brightnessLevelBlue = parseInt(document.getElementById("brightnessBlue").value)
-    renderCanvas()
-}
+
+
 
 function mouseWheelHandler(e)
 {
@@ -190,6 +190,21 @@ function setRotationDegrees(newRotationDegrees){
 
 function setBrightness(newBrightness){
     images[currentImageIndex].brightness = parseInt(newBrightness)
+    renderCanvas()
+}
+
+function setBrightnessRed(newBrightnessLevelRed){
+    images[currentImageIndex].brightnessLevelRed = parseInt(newBrightnessLevelRed)
+    renderCanvas()
+}
+
+function setBrightnessBlue(newBrightnessLevelBlue){
+    images[currentImageIndex].brightnessLevelBlue = parseInt(newBrightnessLevelBlue)
+    renderCanvas()
+}
+
+function setBrightnessGreen(newBrightnessLevelGreen){
+    images[currentImageIndex].brightnessLevelGreen = parseInt(newBrightnessLevelGreen)
     renderCanvas()
 }
 

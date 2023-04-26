@@ -49,7 +49,7 @@ function renderCanvas(){
         
         if (index == currentImageIndex)
         {
-            offscreenCanvasCtx.fillStyle = "yellow"
+            offscreenCanvasCtx.fillStyle = "white"
             offscreenCanvasCtx.fillRect(image.x - 2, image.y - 2, image.width + 4, image.height + 4)
         }
         offscreenCanvasCtx.drawImage(image.src, image.x, image.y, image.width, image.height)
@@ -66,9 +66,6 @@ function renderCanvas(){
             
         }
 
-        
-
-        
         offscreenCanvasCtx.putImageData(imageData, image.x, image.y)
     
         if (image.greyscale)
@@ -97,13 +94,8 @@ function renderCanvas(){
                 imageData.data[i + 2] = 255 - imageData.data[i + 0]
                 imageData.data[i + 3] = 255
                 offscreenCanvasCtx.putImageData(imageData, image.x, image.y)
-        
-
         }
-    }
-
-        
-        
+    }        
         ctx.save()
         ctx.translate((image.x + image.width / 2), (image.y + image.height / 2))
         ctx.rotate(Math.radians(image.rotation))

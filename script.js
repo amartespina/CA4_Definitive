@@ -148,37 +148,18 @@ function renderCanvas(){
             imageToConvolve = images[currentImageIndex]
             width = imageToConvolve.width
             height = imageToConvolve.height
-            console.log(imageToConvolve)
-            console.log("ancho" + imageToConvolve.width)
-            console.log("posicionx " + imageToConvolve.x)
-
-            console.log(imageToConvolve.clientHeight)
-
             doubleBufferG.drawImage(imageToConvolve.src,imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
-            // get the image data (i.e. the pixels) from the double buffer
             imageData = doubleBufferG.getImageData(imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
             data = imageData.data
-            
-                            convolutionAmount = 0
-                            for (let j = 0; j < 9; j++)
-                            {
-                                convolutionAmount += convolutionMatrix[j]
-                            }
-            
-                            originalImageData = doubleBufferG.getImageData(imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
-                            console.log("original image data" + originalImageData)
-                            originalData = originalImageData.data
-                            console.log(originalData)
-            
-            
-                            for (let i = 0; i < data.length; i += 4)
-                            {
-                                data[ i + 3] = 255 // alpha
-            
-                                // apply the convolution for each of red, green and blue
-                                for (let rgbOffset = 0; rgbOffset < 3; rgbOffset++)
-                                {
-                                    // get the pixel and its eight sourrounding pixel values from the original image 
+            convolutionAmount = 0
+            for (let j = 0; j < 9; j++){
+                convolutionAmount += convolutionMatrix[j]
+            }
+            originalImageData = doubleBufferG.getImageData(imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
+            originalData = originalImageData.data
+                            for (let i = 0; i < data.length; i += 4){
+                                data[ i + 3] = 255 
+                                for (let rgbOffset = 0; rgbOffset < 3; rgbOffset++){
                                     let convolutionPixels = [originalData[i + rgbOffset - width * 4 - 4],
                                         originalData[i + rgbOffset - width * 4],
                                         originalData[i + rgbOffset - width * 4 + 4],
@@ -188,31 +169,24 @@ function renderCanvas(){
                                         originalData[i + rgbOffset + width * 4 - 4],
                                         originalData[i + rgbOffset + width * 4],
                                         originalData[i + rgbOffset + width * 4 + 4]]
-            
-                                    // do the convolution
                                     convolvedPixel = 0
-                                    for (let j = 0; j < 9; j++)
-                                    {
+                                    for (let j = 0; j < 9; j++){
                                         convolvedPixel += convolutionPixels[j] * convolutionMatrix[j]
                                     }
-            
-                                    // place the convolved pixel in the double buffer		 
-                                    if (convolutionMatrix === embossConvolutionMatrix) // embossed is treated differently
-                                    {
+        		 
+                                    if (convolutionMatrix === embossConvolutionMatrix){
                                         data[i + rgbOffset] = convolvedPixel + 127
                                     }
-                                    else
-                                    {
+                                    else{
                                         convolvedPixel /= convolutionAmount
                                         data[i + rgbOffset] = convolvedPixel
                                     }
                                 }
                             }
-            
-                            // Draw the imageData onto the canvas
-                            ctx.putImageData(imageData, 30, 0)
- 
-    }        
+     
+        ctx.putImageData(imageData, 0 ,0 )
+        }
+
         ctx.save()
         ctx.translate((image.x + image.width / 2), (image.y + image.height / 2))
         ctx.rotate(Math.radians(image.rotation))
@@ -224,7 +198,13 @@ function renderCanvas(){
 }
 
 
+function escribir(aEscribir){
+    console.log(aEscribir)
+    ctx.fillStyle = "red"
+    ctx.font = "100px Times Roman"
+    ctx.fillText(aEscribir, 150, 150)
 
+}
 
 function mouseWheelHandler(e)
 {

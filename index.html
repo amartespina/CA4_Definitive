@@ -39,6 +39,7 @@
       <div class="canvasContainer">
         <canvas id="canvas" width="500" height="500"></canvas>
       </div>
+
     </div>
     <!--
     <div id="sidebar">
@@ -75,6 +76,12 @@
     <div> 
       <a id="saveImageFile" download="image.png" onclick="this.href = canvas.toDataURL('image/png')">Save Image</a>
     </div>
+
+    <div> 
+      <input  id="texto" class="" type="search"  placeholder="Type the text here"/>
+      <button onclick="escribir(document.getElementById('texto').value)" class="buttonbuscar">Search </button>
+    </div>
+    
   </body>
 
 </html>

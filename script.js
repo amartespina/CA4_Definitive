@@ -10,10 +10,46 @@ let img_01 = new Image()
 img_01.src = "images/hulk.jpg"
 
 
+// Image Convolutions 
+let embossConvolutionMatrix = [0, 0, 0,
+    0, 2, -1,
+    0, -1, 0]
+
+let blurConvolutionMatrix = [1, 2, 1,
+    2, 4, 2,
+    1, 2, 1]
+
+let sharpenConvolutionMatrix = [0, -2, 0,
+    -2, 11, -2,
+    0, -2, 0]
+
+let edgeDetectionConvolutionMatrix = [1, 1, 1,
+    1, -7, 1,
+    1, 1, 1]
+
+let noConvolutionMatrix = [0, 0, 0,
+    0, 1, 0,
+    0, 0, 0]
+    let doubleBuffer = null
+    let doubleBufferG = null
+    let width 
+    let height 
+    let imageToConvolve = null
+    let imageData = null
+    let data = null
+    let originalImageData = null
+    let originalData = null
+    let convolvedPixel = null
+    let convolutionMatrix = null
+
+    convolutionMatrix = embossConvolutionMatrix
+
+
+
 
 let images = [
-    {src: img_00, x: 100, y: 100, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0,  greyscale: false, invert: false},
-    {src: img_01, x: 300, y: 300, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0, greyscale: false, invert: false}]
+    {src: img_00, x: 100, y: 100, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0,  greyscale: false, invert: false, convolutions: false },
+    {src: img_01, x: 300, y: 300, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0, greyscale: false, invert: false, convolutions: false}]
 
 let currentImageIndex = 0
 
@@ -27,6 +63,14 @@ function onAllAssetsLoaded()
     ctx = canvas.getContext("2d")
     canvas.width = canvas.clientWidth
     canvas.height = canvas.clientHeight
+
+    // Convolutions
+    doubleBuffer = document.createElement('canvas')
+    doubleBufferG = doubleBuffer.getContext('2d')
+    doubleBuffer.width = canvas.clientWidth
+    doubleBuffer.height = canvas.clientHeight
+    convolutionMatrix = embossConvolutionMatrix /* select which convolution to use */
+
     
     //offscreen canvas (I can use it for layers, like in Photoshop)
     offscreenCanvas = document.createElement("canvas")
@@ -34,12 +78,11 @@ function onAllAssetsLoaded()
     offscreenCanvas.width = canvas.clientWidth
     offscreenCanvas.height = canvas.clientHeight
                     
-    //draw
-    renderCanvas()
-    
+    //draw    
     window.onmousewheel = document.onmousewheel = mouseWheelHandler
     canvas.addEventListener('mousedown', mousedownHandler)
     canvas.addEventListener('mousemove', moveHandler)
+    renderCanvas()
 }
 function renderCanvas(){
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -95,6 +138,80 @@ function renderCanvas(){
                 imageData.data[i + 3] = 255
                 offscreenCanvasCtx.putImageData(imageData, image.x, image.y)
         }
+
+    
+            
+        }
+
+        if (image.convolutions){
+            console.log("image convolutions")
+            imageToConvolve = images[currentImageIndex]
+            width = imageToConvolve.width
+            height = imageToConvolve.height
+            console.log(imageToConvolve)
+            console.log("ancho" + imageToConvolve.width)
+            console.log("posicionx " + imageToConvolve.x)
+
+            console.log(imageToConvolve.clientHeight)
+
+            doubleBufferG.drawImage(imageToConvolve.src,imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
+            // get the image data (i.e. the pixels) from the double buffer
+            imageData = doubleBufferG.getImageData(imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
+            data = imageData.data
+            
+                            convolutionAmount = 0
+                            for (let j = 0; j < 9; j++)
+                            {
+                                convolutionAmount += convolutionMatrix[j]
+                            }
+            
+                            originalImageData = doubleBufferG.getImageData(imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
+                            console.log("original image data" + originalImageData)
+                            originalData = originalImageData.data
+                            console.log(originalData)
+            
+            
+                            for (let i = 0; i < data.length; i += 4)
+                            {
+                                data[ i + 3] = 255 // alpha
+            
+                                // apply the convolution for each of red, green and blue
+                                for (let rgbOffset = 0; rgbOffset < 3; rgbOffset++)
+                                {
+                                    // get the pixel and its eight sourrounding pixel values from the original image 
+                                    let convolutionPixels = [originalData[i + rgbOffset - width * 4 - 4],
+                                        originalData[i + rgbOffset - width * 4],
+                                        originalData[i + rgbOffset - width * 4 + 4],
+                                        originalData[i + rgbOffset - 4],
+                                        originalData[i + rgbOffset],
+                                        originalData[i + rgbOffset + 4],
+                                        originalData[i + rgbOffset + width * 4 - 4],
+                                        originalData[i + rgbOffset + width * 4],
+                                        originalData[i + rgbOffset + width * 4 + 4]]
+            
+                                    // do the convolution
+                                    convolvedPixel = 0
+                                    for (let j = 0; j < 9; j++)
+                                    {
+                                        convolvedPixel += convolutionPixels[j] * convolutionMatrix[j]
+                                    }
+            
+                                    // place the convolved pixel in the double buffer		 
+                                    if (convolutionMatrix === embossConvolutionMatrix) // embossed is treated differently
+                                    {
+                                        data[i + rgbOffset] = convolvedPixel + 127
+                                    }
+                                    else
+                                    {
+                                        convolvedPixel /= convolutionAmount
+                                        data[i + rgbOffset] = convolvedPixel
+                                    }
+                                }
+                            }
+            
+                            // Draw the imageData onto the canvas
+                            ctx.putImageData(imageData, 30, 0)
+ 
     }        
         ctx.save()
         ctx.translate((image.x + image.width / 2), (image.y + image.height / 2))
@@ -223,6 +340,11 @@ function toggleGreyscale(greyscaleIsSet){
 function invert(invertIsSet){
     images[currentImageIndex].invert = invertIsSet
     renderCanvas()                
+}
+
+function canvasImageConvolutions(convolutionsIsSet){
+    images[currentImageIndex].convolutions = convolutionsIsSet
+    renderCanvas()
 }
 
 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Course notes example code</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <style>
+            img
+            {
+                width:500px;
+                height:500px;
+                border:thin solid black;
+            }
+
+            #loadingMessage
+            {
+                position:absolute;
+                top:100px;
+                left:100px;
+                z-index:100;
+                font-size:50px;
+            }
+        </style>
+
+        <script>
+            // set up the convolution matrix
+            let embossConvolutionMatrix = [0, 0, 0,
+                0, 2, -1,
+                0, -1, 0]
+
+            let blurConvolutionMatrix = [1, 2, 1,
+                2, 4, 2,
+                1, 2, 1]
+
+            let sharpenConvolutionMatrix = [0, -2, 0,
+                -2, 11, -2,
+                0, -2, 0]
+
+            let edgeDetectionConvolutionMatrix = [1, 1, 1,
+                1, -7, 1,
+                1, 1, 1]
+
+            let noConvolutionMatrix = [0, 0, 0,
+                0, 1, 0,
+                0, 0, 0]
+
+            let canvas = null
+            let ctx = null
+            let doubleBuffer = null
+            let doubleBufferG = null
+            let width = null
+            let height = null
+            let imageToConvolve = null
+            let imageData = null
+            let data = null
+            let originalImageData = null
+            let originalData = null
+            let convolvedPixel = null
+            let convolutionMatrix = null
+
+            window.onload = onAllAssetsLoaded
+            document.write("<div id='loadingMessage'>Loading...</div>")
+            function onAllAssetsLoaded()
+            {
+                // hide the webpage loading message
+                document.getElementById('loadingMessage').style.visibility = "hidden"
+
+                imageToConvolve = document.getElementById('imageToConvolve')
+                canvas = document.getElementById('canvas')
+                ctx = canvas.getContext('2d')
+                doubleBuffer = document.createElement('canvas')
+                doubleBufferG = doubleBuffer.getContext('2d')
+                width = imageToConvolve.clientWidth
+                height = imageToConvolve.clientHeight
+                canvas.width = width
+                canvas.height = height
+                doubleBuffer.width = width
+                doubleBuffer.height = height
+
+                convolutionMatrix = blurConvolutionMatrix /* select which convolution to use */
+
+                renderCanvas()
+            }
+
+
+            function renderCanvas()
+            {
+                // draw the original image into the double buffer
+                doubleBufferG.drawImage(imageToConvolve, 0, 0, width, height)
+
+                // get the image data (i.e. the pixels) from the double buffer
+                imageData = doubleBufferG.getImageData(0, 0, width, height)
+                data = imageData.data
+
+                convolutionAmount = 0
+                for (let j = 0; j < 9; j++)
+                {
+                    convolutionAmount += convolutionMatrix[j]
+                }
+
+                originalImageData = doubleBufferG.getImageData(0, 0, width, height)
+                originalData = originalImageData.data
+
+
+                for (let i = 0; i < data.length; i += 4)
+                {
+                    data[ i + 3] = 255 // alpha
+
+                    // apply the convolution for each of red, green and blue
+                    for (let rgbOffset = 0; rgbOffset < 3; rgbOffset++)
+                    {
+                        // get the pixel and its eight sourrounding pixel values from the original image 
+                        let convolutionPixels = [originalData[i + rgbOffset - width * 4 - 4],
+                            originalData[i + rgbOffset - width * 4],
+                            originalData[i + rgbOffset - width * 4 + 4],
+                            originalData[i + rgbOffset - 4],
+                            originalData[i + rgbOffset],
+                            originalData[i + rgbOffset + 4],
+                            originalData[i + rgbOffset + width * 4 - 4],
+                            originalData[i + rgbOffset + width * 4],
+                            originalData[i + rgbOffset + width * 4 + 4]]
+
+                        // do the convolution
+                        convolvedPixel = 0
+                        for (let j = 0; j < 9; j++)
+                        {
+                            convolvedPixel += convolutionPixels[j] * convolutionMatrix[j]
+                        }
+
+                        // place the convolved pixel in the double buffer		 
+                        if (convolutionMatrix === blurConvolutionMatrix) // embossed is treated differently
+                        {
+                            data[i + rgbOffset] = convolvedPixel + 127
+                        }
+                        else
+                        {
+                            convolvedPixel /= convolutionAmount
+                            data[i + rgbOffset] = convolvedPixel
+                        }
+                    }
+                }
+
+                // Draw the imageData onto the canvas
+                ctx.putImageData(imageData, 0, 0)
+            }
+        </script>
+    </head>
+
+    <body>
+        <img id = 'imageToConvolve' src = 'images/hulk.jpg'>
+        <canvas id = 'canvas'></canvas>
+    </body>
+</html>

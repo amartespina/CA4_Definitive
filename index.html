@@ -33,7 +33,7 @@
 
       <div id="buttonContents">
         <button class="button1">Image</button>
-        <button class="button2">Delete Image</button>
+        <button class="button2" onclick="deleteImage()">Delete Image</button>
       </div>
 
       <div class="canvasContainer">
@@ -41,26 +41,28 @@
       </div>
 
     </div>
-    <!--
-    <div id="sidebar">
-      <label class="Red" for="brightnesRed">Red:</label>
-      <input type="range" id="brightnesRed" value="0" min="-255" max="255" onchange="updateBrightnesLevel()">
 
-      <label class="Green" for="brightnesGreen">Green:</label>
-      <input type="range" id="brightnesGreen" value="0" min="-255" max="255" onchange="updateBrightnesLevel()">
-
-      <label class="Blue" for="brightnesBlue">Blue:</label>
-      <input type="range" id="brightnesBlue" value="0" min="-255" max="255" onchange="updateBrightnesLevel()">
-    </div>
+    <!-- 
+    <input type="file" id="fileUpload" accept="image/*"/> <br />
+    <button onclick="addImage(document.getElementById('fileUpload').value)"> añadir</button>
 -->
-    <div> Image Filters <br>
+d
+    <div> Canva Filters <br>
       <label>Brightness</label><input type="range" value="0" min="-255" max="255" onchange="setBrightness(this.value)" /><br/>
       <label>Greyscale</label><input type="checkbox" onchange="toggleGreyscale(this.checked)" /><br> 
-      <label>Convolutions</label><input type="checkbox" onchange="canvasImageConvolutions(this.checked)" /><br> 
-      Sepia <br> 
       <label>Invert</label><input type="checkbox" onchange="invert(this.checked)" /><br>  
+     
+     
+      Sepia <br> 
+     
       Posterise <br>
-    </div>
+    </div> <br> <br> 
+
+    <div> Convolutions <br>
+      <label>Emboss</label><input type="checkbox" onchange="embossImageConvolution(this.checked)" /><br> 
+      <label>Blur</label><input type="checkbox" onchange="blurImageConvolution(this.checked)" /><br> 
+      <label>Sharpen</label><input type="checkbox" onchange="sharpenImageConvolution(this.checked)" /><br> 
+    </div>  
 
     <br> <br> <br> 
     <div>

@@ -11,7 +11,7 @@ img_01.src = "images/hulk.jpg"
 
 
 
-let pintar = false 
+let paint = false 
 let radius = 10
 
 
@@ -58,8 +58,6 @@ let images = [
 let currentImageIndex = 0
 
 
-
-
 window.onload = onAllAssetsLoaded
 document.write("<div id='loadingMessage'>Loading...</div>")
 function onAllAssetsLoaded(){
@@ -75,22 +73,16 @@ function onAllAssetsLoaded(){
     doubleBuffer.width = canvas.clientWidth
     doubleBuffer.height = canvas.clientHeight
 
-
-    
     offscreenCanvas = document.createElement("canvas")
     offscreenCanvasCtx = offscreenCanvas.getContext("2d")
     offscreenCanvas.width = canvas.clientWidth
     offscreenCanvas.height = canvas.clientHeight
                     
-
     window.onmousewheel = document.onmousewheel = mouseWheelHandler
     canvas.addEventListener('mousedown', mousedownHandler)
     canvas.addEventListener('mousemove', moveHandler)
     canvas.addEventListener('mousemove', mousemoveHandler)
 
-    
-
-    
     renderCanvas()
 }
 
@@ -307,28 +299,28 @@ function color(newColor){
     ctx.fillStyle = newColor
 }
 
-function escribir(aEscribir){
-    console.log(aEscribir)
-    ctx.fillStyle = "red"
-    ctx.font = "100px Times Roman"
-   let texto =  ctx.fillText(aEscribir, 150, 150)
+function toWrite(text){   
+    let textX = document.getElementById("positionx").value
+    let textY = document.getElementById("positiony").value
+    ctx.fillStyle = document.getElementById("colourPickerText")
+    ctx.font = "100px Times Roman" 
+   let texto =  ctx.fillText(text, textX, textY) // poner las variables 
 }
 
 function mousemoveHandler(e){
-    if(pintar){
+    if(paint){
         ctx.fillStyle=document.getElementById("colourPicker").value
-    if (e.which === 1)  // left mouse button
-    {
-        let canvasBoundingRectangle = canvas.getBoundingClientRect()
-        mouseX = e.clientX - canvasBoundingRectangle.left
-        mouseY = e.clientY - canvasBoundingRectangle.top
 
-        ctx.beginPath()
-        ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.closePath()
+        if (e.which === 1){
+            let canvasBoundingRectangle = canvas.getBoundingClientRect()
+            mouseX = e.clientX - canvasBoundingRectangle.left
+            mouseY = e.clientY - canvasBoundingRectangle.top
+            ctx.beginPath()
+            ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.closePath()
+        }
     }
-}
 }
 
 
@@ -353,33 +345,20 @@ function mouseWheelHandler(e){
         }
     }
 }
-function mousedownHandler(e)
-{
-    // check if the left button is being pressed
-
-
+function mousedownHandler(e){
     if (e.which === 1){
         //figure out where the mouse is in relation to the canvas 
         let canvasBoundingRectangle = canvas.getBoundingClientRect()
         mouseX = e.clientX - canvasBoundingRectangle.left
         mouseY = e.clientY - canvasBoundingRectangle.top
-        if(pintar){
-            ctx.beginPath()
-            ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2)
-            ctx.fill()
-            ctx.closePath()
-        }
-        
+
         currentImageIndex = null
-        for (let i = images.length - 1; i > -1; i--)
-        {
+        for (let i = images.length - 1; i > -1; i--){
             // get the offset of the image ( where I'm clicking on the image, i.e. x and y )
-            if (mouseIsInsideImage(images[i].x, images[i].y, images[i].width, images[i].height, mouseX, mouseY))
-            {
+            if (mouseIsInsideImage(images[i].x, images[i].y, images[i].width, images[i].height, mouseX, mouseY)){
                 offsetX = mouseX - images[i].x
                 offsetY = mouseY - images[i].y
                 currentImageIndex = i
-
                 renderCanvas()
                 break
             }
@@ -388,8 +367,7 @@ function mousedownHandler(e)
 }
 
 function moveHandler(e){
-    if (currentImageIndex !== null && e.which === 1){ //left mouse button
-
+    if (currentImageIndex !== null && e.which === 1){ 
         let canvasBoundingRectangle = canvas.getBoundingClientRect()
         mouseX = e.clientX - canvasBoundingRectangle.left
         mouseY = e.clientY - canvasBoundingRectangle.top
@@ -461,14 +439,15 @@ function invert(invertIsSet){
 }
 
 
-function activarPintar(pintarIsSet){
-    pintar = pintarIsSet
+function activePaint(paintIsSet){
+    paint = paintIsSet
+
     renderCanvas()
+    
 }
 
 // Canvas Image Convolutions 
 function embossImageConvolution(embosssIsSet){
-    console.log("emboss")
     images[currentImageIndex].emboss = embosssIsSet
     renderCanvas()
 }
@@ -489,4 +468,9 @@ Math.radians = function (degrees){
 function setRotationDegrees(newRotationDegrees){
     images[currentImageIndex].rotation = parseInt(newRotationDegrees)
     renderCanvas()
+}
+
+function radiusSize(newRadius)
+{
+    radius = newRadius
 }

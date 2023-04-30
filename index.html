@@ -42,30 +42,32 @@
 
     </div>
 
-    <!-- 
-    <input type="file" id="fileUpload" accept="image/*"/> <br />
-    <button onclick="addImage(document.getElementById('fileUpload').value)"> añadir</button>
--->
 
     <div> Canva Filters <br>
-      <input type="color" id="colourPicker" onchange="color(this.value)">
-      <label>Pintar</label><input type="checkbox" onchange="activarPintar(this.checked)" /><br> 
+
+      
       <label>Brightness</label><input type="range" value="0" min="-255" max="255" onchange="setBrightness(this.value)" /><br/>
       <label>Greyscale</label><input type="checkbox" onchange="toggleGreyscale(this.checked)" /><br>
       <label>Sepia</label><input type="checkbox" onchange="toggleSepia(this.checked)" /><br> 
       <label>Invert</label><input type="checkbox" onchange="invert(this.checked)" /><br>  
 
-      <input type="file" id="backgroundImage"> </div></div>
+
 
     </div> <br> <br> 
 
-    <div> Convolutions <br>
+    <div> Convolutions Tools <br>
       <label>Emboss</label><input type="checkbox" onchange="embossImageConvolution(this.checked)" /><br> 
       <label>Blur</label><input type="checkbox" onchange="blurImageConvolution(this.checked)" /><br> 
       <label>Sharpen</label><input type="checkbox" onchange="sharpenImageConvolution(this.checked)" /><br> 
     </div>  
 
     <br> <br> <br> 
+    <div> Paint Tools<br> <br>
+      <label>Paint</label><input type="checkbox" onchange="activePaint(this.checked) " /><br> 
+      <input type="color" id="colourPicker" onchange="color(this.value)"> <br>
+      <label for="brightnessRed">RadiusSize</label><input type="range" id="brightnessRed" value="0" min="0" max="100" onchange = "radiusSize(this.value)"/>
+
+    </div>
     <div>
       <label>Rotate</label><input type="range" value="0" min="0" max="360" onchange="setRotationDegrees(this.value)" /><br/>
     </div>
@@ -80,9 +82,15 @@
       <a id="saveImageFile" download="image.png" onclick="this.href = canvas.toDataURL('image/png')">Save Image</a>
     </div>
 
-    <div> 
-      <input  id="texto" class="" type="search"  placeholder="Type the text here"/>
-      <button onclick="escribir(document.getElementById('texto').value)" class="buttonbuscar">Search </button>
+    <div>  Add Text <br> 
+      <input type="color" id="colourPickerText"> <br>
+      <input  id="texto" type="search"  placeholder="Type here  to add text"/>
+      <p> Insert position X and Y where for the text</p>
+      <input  id="positionx" type="search"  placeholder="Position X for the text"/> <br>
+      <input id="positiony"  placeholder="Position Y for the text">  <br>
+
+
+      <button onclick="toWrite(document.getElementById('texto').value)" >Add text </button>
     </div>
     
   </body>

@@ -11,6 +11,8 @@ img_01.src = "images/hulk.jpg"
 
 
 
+let pintar = false 
+let radius = 10
 
 
 
@@ -84,6 +86,11 @@ function onAllAssetsLoaded(){
     window.onmousewheel = document.onmousewheel = mouseWheelHandler
     canvas.addEventListener('mousedown', mousedownHandler)
     canvas.addEventListener('mousemove', moveHandler)
+    canvas.addEventListener('mousemove', mousemoveHandler)
+
+    
+
+    
     renderCanvas()
 }
 
@@ -295,6 +302,10 @@ function renderCanvas(){
     })
 }
 
+function color(newColor){
+    console.log(newColor)
+    ctx.fillStyle = newColor
+}
 
 function escribir(aEscribir){
     console.log(aEscribir)
@@ -302,6 +313,26 @@ function escribir(aEscribir){
     ctx.font = "100px Times Roman"
    let texto =  ctx.fillText(aEscribir, 150, 150)
 }
+
+function mousemoveHandler(e){
+    if(pintar){
+        ctx.fillStyle=document.getElementById("colourPicker").value
+    if (e.which === 1)  // left mouse button
+    {
+        let canvasBoundingRectangle = canvas.getBoundingClientRect()
+        mouseX = e.clientX - canvasBoundingRectangle.left
+        mouseY = e.clientY - canvasBoundingRectangle.top
+
+        ctx.beginPath()
+        ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.closePath()
+    }
+}
+}
+
+
+
 
 // Mouse Controls 
 function mouseWheelHandler(e){
@@ -325,12 +356,19 @@ function mouseWheelHandler(e){
 function mousedownHandler(e)
 {
     // check if the left button is being pressed
-    if (e.which === 1)
-    {
+
+
+    if (e.which === 1){
         //figure out where the mouse is in relation to the canvas 
         let canvasBoundingRectangle = canvas.getBoundingClientRect()
         mouseX = e.clientX - canvasBoundingRectangle.left
         mouseY = e.clientY - canvasBoundingRectangle.top
+        if(pintar){
+            ctx.beginPath()
+            ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2)
+            ctx.fill()
+            ctx.closePath()
+        }
         
         currentImageIndex = null
         for (let i = images.length - 1; i > -1; i--)
@@ -422,6 +460,11 @@ function invert(invertIsSet){
     renderCanvas()                
 }
 
+
+function activarPintar(pintarIsSet){
+    pintar = pintarIsSet
+    renderCanvas()
+}
 
 // Canvas Image Convolutions 
 function embossImageConvolution(embosssIsSet){

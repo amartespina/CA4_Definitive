@@ -11,6 +11,10 @@
 
 }
 
+#canvas:hover
+{
+    cursor:url(images/paint_brush.png) 6 30, auto
+}
 #loadingMessage
 {
     position: absolute;

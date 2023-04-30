@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Course notes example code</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <style>
+            #canvas
+            {
+                border:1px solid black;
+                width:500px;
+                height:500px;
+            }
+
+            #canvas:hover
+            {
+                cursor:url(images/paint_brush.png) 6 30, auto
+            }
+
+            #loadingMessage
+            {
+                position:absolute;
+                top:100px;
+                left:100px;
+                z-index:100;
+                font-size:50px;
+            }
+        </style>
+
+        <script>
+            let radius = 10
+            let canvas = null
+            let ctx = null
+
+            let image1 = new Image()
+            image1.src = "images/dkit01.png"
+            let image2 = new Image()
+            image2.src = "images/dkit02.png"
+
+            window.onload = onAllAssetsLoaded
+            document.write("<div id='loadingMessage'>Loading...</div>")
+            function onAllAssetsLoaded()
+            {
+                // hide the webpage loading message
+                document.getElementById('loadingMessage').style.visibility = "hidden"
+
+                canvas = document.getElementById("canvas")
+                ctx = canvas.getContext("2d")
+                canvas.width = canvas.clientWidth
+                canvas.height = canvas.clientHeight
+                ctx.fillStyle = "red"
+                document.getElementById("colourPicker").value = "#ff0000"
+
+                setBackgroundImage(image1)
+
+                canvas.addEventListener('mousemove', mousemoveHandler)
+            }
+
+
+            function mousemoveHandler(e)
+            {
+                if (e.which === 1)  // left mouse button
+                {
+                    let canvasBoundingRectangle = canvas.getBoundingClientRect()
+                    mouseX = e.clientX - canvasBoundingRectangle.left
+                    mouseY = e.clientY - canvasBoundingRectangle.top
+
+                    ctx.beginPath()
+                    ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2)
+                    ctx.fill()
+                    ctx.closePath()
+                }
+            } 
+            
+
+
+            function clearScreen()
+            {
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+            }
+
+
+            function color(newColor)
+            {
+                ctx.fillStyle = newColor
+            }
+
+
+            function radiusSize(newRadius)
+            {
+                radius = newRadius
+            }
+
+
+            function setBackgroundImage(image)
+            {
+                ctx.drawImage(image, 0, 0, 500, 500)
+            }
+        </script>
+
+    </head>
+    <body>
+        <div>
+            <canvas id = "canvas">
+                Your browser does not support the HTML5 'Canvas' tag.
+            </canvas>
+        </div>
+        <input type="button" value="Clear Screen" onClick="clearScreen()"><br>
+        <input type="button" value="Background Image 1" onClick="setBackgroundImage(image1)">
+        <input type="button" value="Background Image 2" onClick="setBackgroundImage(image2)"><br>
+        <input type="button" value="Red" onClick="color('red')">
+        <input type="button" value="Yellow" onClick="color('yellow')">
+        <input type="button" value="Blue" onClick="color('blue')">
+        <input type="color" id="colourPicker" onchange="color(this.value)"><br>
+        <input type="button" value="Thin" onClick="radiusSize(10)">
+        <input type="button" value="Thick" onClick="radiusSize(50)">
+    </body>
+</html>

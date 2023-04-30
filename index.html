@@ -46,8 +46,10 @@
     <input type="file" id="fileUpload" accept="image/*"/> <br />
     <button onclick="addImage(document.getElementById('fileUpload').value)"> añadir</button>
 -->
-d
+
     <div> Canva Filters <br>
+      <input type="color" id="colourPicker" onchange="color(this.value)">
+      <label>Pintar</label><input type="checkbox" onchange="activarPintar(this.checked)" /><br> 
       <label>Brightness</label><input type="range" value="0" min="-255" max="255" onchange="setBrightness(this.value)" /><br/>
       <label>Greyscale</label><input type="checkbox" onchange="toggleGreyscale(this.checked)" /><br>
       <label>Sepia</label><input type="checkbox" onchange="toggleSepia(this.checked)" /><br> 

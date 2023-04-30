@@ -50,8 +50,8 @@ let noConvolutionMatrix = [0, 0, 0,
 
 
 let images = [
-    {src: img_00, x: 100, y: 100, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0,  greyscale: false, invert: false, emboss: false, blur:false, sharpen:false },
-    {src: img_01, x: 300, y: 300, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0, greyscale: false, invert: false, emboss: false, blur:false, sharpen:false}]
+    {src: img_00, x: 100, y: 100, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0,  greyscale: false, invert: false, emboss: false, blur:false, sharpen:false , sepia: false},
+    {src: img_01, x: 300, y: 300, width: 150, height: 150, rotation: 0, brightness: 0, brightnessLevelRed: 0, brightnessLevelGreen: 0, brightnessLevelBlue: 0, greyscale: false, invert: false, emboss: false, blur:false, sharpen:false, sepia:false}]
 
 let currentImageIndex = 0
 
@@ -138,10 +138,26 @@ function renderCanvas(){
              }
             
         }
+        if (image.sepia){
+            imageData = offscreenCanvasCtx.getImageData(image.x, image.y, image.width, image.height)
+            for (let i = 0; i < imageData.data.length; i += 4){
+                red = imageData.data[i]
+                green = imageData.data[i + 1]
+                blue = imageData.data[i + 2]
+
+                imageData.data[i] = (red * 0.393) + (green * 0.769) + (blue * 0.189)
+                imageData.data[i + 1] = (red * 0.349) + (green * 0.686) + (blue * 0.168)
+                imageData.data[i + 2] = (red * 0.272) + (green * 0.534) + (blue * 0.131)
+            }
+            
+            offscreenCanvasCtx.putImageData(imageData, image.x , image.y)
+        }
+
 
         if (image.emboss){
             convolutionMatrix = embossConvolutionMatrix
             imageToConvolve = images[currentImageIndex]
+            console.log("emboss.image")
             width = imageToConvolve.width
             height = imageToConvolve.height
             doubleBufferG.drawImage(imageToConvolve.src,imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
@@ -180,7 +196,7 @@ function renderCanvas(){
                                 }
                             }
      
-        ctx.putImageData(imageData, 0 ,0 )
+                            offscreenCanvasCtx.putImageData(imageData,imageToConvolve.x,imageToConvolve.y )
         }
 
         if (image.blur){
@@ -197,34 +213,33 @@ function renderCanvas(){
             }
             originalImageData = doubleBufferG.getImageData(imageToConvolve.x,imageToConvolve.y, imageToConvolve.width, imageToConvolve.height)
             originalData = originalImageData.data
-                            for (let i = 0; i < data.length; i += 4){
-                                data[ i + 3] = 255 
-                                for (let rgbOffset = 0; rgbOffset < 3; rgbOffset++){
-                                    let convolutionPixels = [originalData[i + rgbOffset - width * 4 - 4],
-                                        originalData[i + rgbOffset - width * 4],
-                                        originalData[i + rgbOffset - width * 4 + 4],
-                                        originalData[i + rgbOffset - 4],
-                                        originalData[i + rgbOffset],
-                                        originalData[i + rgbOffset + 4],
-                                        originalData[i + rgbOffset + width * 4 - 4],
-                                        originalData[i + rgbOffset + width * 4],
-                                        originalData[i + rgbOffset + width * 4 + 4]]
-                                    convolvedPixel = 0
-                                    for (let j = 0; j < 9; j++){
-                                        convolvedPixel += convolutionPixels[j] * convolutionMatrix[j]
-                                    }
+            for (let i = 0; i < data.length; i += 4){
+                data[ i + 3] = 255 
+                for (let rgbOffset = 0; rgbOffset < 3; rgbOffset++){
+                    let convolutionPixels = [originalData[i + rgbOffset - width * 4 - 4],
+                    originalData[i + rgbOffset - width * 4],
+                    originalData[i + rgbOffset - width * 4 + 4],
+                    originalData[i + rgbOffset - 4],
+                    originalData[i + rgbOffset],
+                    originalData[i + rgbOffset + 4],
+                    originalData[i + rgbOffset + width * 4 - 4],
+                    originalData[i + rgbOffset + width * 4],
+                    originalData[i + rgbOffset + width * 4 + 4]]
+                    convolvedPixel = 0
+                    for (let j = 0; j < 9; j++){
+                        convolvedPixel += convolutionPixels[j] * convolutionMatrix[j]
+                    }
         		 
-                                    if (convolutionMatrix === blurConvolutionMatrix){
-                                        data[i + rgbOffset] = convolvedPixel + 127
-                                    }
-                                    else{
-                                        convolvedPixel /= convolutionAmount
-                                        data[i + rgbOffset] = convolvedPixel
-                                    }
-                                }
-                            }
-     
-        ctx.putImageData(imageData, 0 ,0 )
+                    if (convolutionMatrix === blurConvolutionMatrix){
+                        data[i + rgbOffset] = convolvedPixel + 127
+                    }
+                    else{
+                        convolvedPixel /= convolutionAmount
+                        data[i + rgbOffset] = convolvedPixel
+                        }
+                }
+            }
+            offscreenCanvasCtx.putImageData(imageData,imageToConvolve.x,imageToConvolve.y )
         }
 
         if (image.sharpen){
@@ -267,8 +282,7 @@ function renderCanvas(){
                                     }
                                 }
                             }
-     
-        ctx.putImageData(imageData, 0 ,0 )
+             offscreenCanvasCtx.putImageData(imageData,imageToConvolve.x,imageToConvolve.y )
         }
 
         ctx.save()
@@ -286,8 +300,7 @@ function escribir(aEscribir){
     console.log(aEscribir)
     ctx.fillStyle = "red"
     ctx.font = "100px Times Roman"
-    ctx.fillText(aEscribir, 150, 150)
-
+   let texto =  ctx.fillText(aEscribir, 150, 150)
 }
 
 // Mouse Controls 
@@ -328,6 +341,7 @@ function mousedownHandler(e)
                 offsetX = mouseX - images[i].x
                 offsetY = mouseY - images[i].y
                 currentImageIndex = i
+
                 renderCanvas()
                 break
             }
@@ -347,6 +361,7 @@ function moveHandler(e){
         renderCanvas()
     }
 }
+
 function mouseIsInsideImage(imageTopLeftX, imageTopLeftY, imageWidth, imageHeight, x, y){
     if ((x > imageTopLeftX) && (y > imageTopLeftY)) {
         if (x > imageTopLeftX){
@@ -371,38 +386,37 @@ function mouseIsInsideImage(imageTopLeftX, imageTopLeftY, imageWidth, imageHeigh
 
 
 
-function setRotationDegrees(newRotationDegrees){
-    images[currentImageIndex].rotation = parseInt(newRotationDegrees)
-    renderCanvas()
-}
 
 
-// Different kind of Brightness
-function setBrightness(newBrightness){
-    images[currentImageIndex].brightness = parseInt(newBrightness)
-    renderCanvas()
-}
 
+// RGB 
 function setBrightnessRed(newBrightnessLevelRed){
     images[currentImageIndex].brightnessLevelRed = parseInt(newBrightnessLevelRed)
     renderCanvas()
 }
-
 function setBrightnessBlue(newBrightnessLevelBlue){
     images[currentImageIndex].brightnessLevelBlue = parseInt(newBrightnessLevelBlue)
     renderCanvas()
 }
-
 function setBrightnessGreen(newBrightnessLevelGreen){
     images[currentImageIndex].brightnessLevelGreen = parseInt(newBrightnessLevelGreen)
     renderCanvas()
 }
 
+
+// Canvas Filters
 function toggleGreyscale(greyscaleIsSet){
     images[currentImageIndex].greyscale = greyscaleIsSet
     renderCanvas()                
 }
-
+function toggleSepia(sepiaIsSet){
+    images[currentImageIndex].sepia = sepiaIsSet
+    renderCanvas()                
+}
+function setBrightness(newBrightness){
+    images[currentImageIndex].brightness = parseInt(newBrightness)
+    renderCanvas()
+}
 function invert(invertIsSet){
     images[currentImageIndex].invert = invertIsSet
     renderCanvas()                
@@ -411,34 +425,25 @@ function invert(invertIsSet){
 
 // Canvas Image Convolutions 
 function embossImageConvolution(embosssIsSet){
+    console.log("emboss")
     images[currentImageIndex].emboss = embosssIsSet
     renderCanvas()
 }
-
 function blurImageConvolution(blurIsSet){
     images[currentImageIndex].blur = blurIsSet
     renderCanvas()
 }
-
 function sharpenImageConvolution(sharpenIsSet){
     images[currentImageIndex].sharpen = sharpenIsSet
     renderCanvas()
 }
 
 
-/** 
- * function addSuperhero(align, alive, eye, hair, id, sex, name ){
-
-    let newSuperhero = {identificationNumber:uniqueId, align: align, alive:alive ,eye:eye, hair:hair, id:id, sex:sex, name:name }
-
-    superheroesToView.push(newSuperhero)
-    uniqueId++
-    viewJSONData(superheroesToView)
-
-}
-
-*/
 
 Math.radians = function (degrees){
     return degrees * Math.PI / 180
+}
+function setRotationDegrees(newRotationDegrees){
+    images[currentImageIndex].rotation = parseInt(newRotationDegrees)
+    renderCanvas()
 }

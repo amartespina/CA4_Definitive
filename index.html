@@ -49,13 +49,12 @@
 d
     <div> Canva Filters <br>
       <label>Brightness</label><input type="range" value="0" min="-255" max="255" onchange="setBrightness(this.value)" /><br/>
-      <label>Greyscale</label><input type="checkbox" onchange="toggleGreyscale(this.checked)" /><br> 
+      <label>Greyscale</label><input type="checkbox" onchange="toggleGreyscale(this.checked)" /><br>
+      <label>Sepia</label><input type="checkbox" onchange="toggleSepia(this.checked)" /><br> 
       <label>Invert</label><input type="checkbox" onchange="invert(this.checked)" /><br>  
-     
-     
-      Sepia <br> 
-     
-      Posterise <br>
+
+      <input type="file" id="backgroundImage"> </div></div>
+
     </div> <br> <br> 
 
     <div> Convolutions <br>

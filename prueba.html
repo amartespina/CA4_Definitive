@@ -1,154 +1,150 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Course notes example code</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+    <title>Document</title>
+  </head>
+  <style> 
+  body{ background-color: ivory; }
+#canvas{border:1px solid red;}
+  </style>
+    <script>
+        let canvas = document.getElementById("canvas");
+        ctx = canvas.getContext("2d")
 
-        <style>
-            img
-            {
-                width:500px;
-                height:500px;
-                border:thin solid black;
-            }
+// letiables used to get mouse position on the canvas
+let $canvas = $("#canvas");
+let canvasOffset = $canvas.offset();
+let offsetX = canvasOffset.left;
+let offsetY = canvasOffset.top;
+let scrollX = $canvas.scrollLeft();
+let scrollY = $canvas.scrollTop();
 
-            #loadingMessage
-            {
-                position:absolute;
-                top:100px;
-                left:100px;
-                z-index:100;
-                font-size:50px;
-            }
-        </style>
+// letiables to save last mouse position
+// used to see how far the user dragged the mouse
+// and then move the text by that distance
+let startX;
+let startY;
 
-        <script>
-            // set up the convolution matrix
-            let embossConvolutionMatrix = [0, 0, 0,
-                0, 2, -1,
-                0, -1, 0]
+// some text objects
+let texts = [];
 
-            let blurConvolutionMatrix = [1, 2, 1,
-                2, 4, 2,
-                1, 2, 1]
+// some test texts
+texts.push({text: "Volledige naam", x: 20, y: 160});
+texts.push({text: "Nr", x: 20, y: 175});
+texts.push({text: "Geb.Datum", x: 20, y: 190});
 
-            let sharpenConvolutionMatrix = [0, -2, 0,
-                -2, 11, -2,
-                0, -2, 0]
+// calculate width of each text for hit-testing purposes
+ctx.font = "16px verdana";
+for (let i = 0; i < texts.length; i++) {
+    let text = texts[i];
+    text.width = ctx.measureText(text.text).width;
+    text.height = 16;
+}
 
-            let edgeDetectionConvolutionMatrix = [1, 1, 1,
-                1, -7, 1,
-                1, 1, 1]
+// this let will hold the index of the selected text
+let selectedText = -1;
 
-            let noConvolutionMatrix = [0, 0, 0,
-                0, 1, 0,
-                0, 0, 0]
+// START: draw all texts to the canvas
+draw();
 
-            let canvas = null
-            let ctx = null
-            let doubleBuffer = null
-            let doubleBufferG = null
-            let width = null
-            let height = null
-            let imageToConvolve = null
-            let imageData = null
-            let data = null
-            let originalImageData = null
-            let originalData = null
-            let convolvedPixel = null
-            let convolutionMatrix = null
+// clear the canvas draw all texts
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < texts.length; i++) {
+        let text = texts[i];
+        ctx.fillStyle = "#CCCCCC";
+        ctx.fillRect(text.x, text.y, ctx.measureText(text.text).width, -ctx.measureText('M').width); 
+        ctx.fillStyle = "blue";
+        ctx.fillText(text.text, text.x, text.y);
+				ctx.fill();
+        
+    }
+}
 
-            window.onload = onAllAssetsLoaded
-            document.write("<div id='loadingMessage'>Loading...</div>")
-            function onAllAssetsLoaded()
-            {
-                // hide the webpage loading message
-                document.getElementById('loadingMessage').style.visibility = "hidden"
+// test if x,y is inside the bounding box of texts[textIndex]
+function textHittest(x, y, textIndex) {
+    let text = texts[textIndex];
+    return (x >= text.x && x <= text.x + text.width && y >= text.y - text.height && y <= text.y);
+}
 
-                imageToConvolve = document.getElementById('imageToConvolve')
-                canvas = document.getElementById('canvas')
-                ctx = canvas.getContext('2d')
-                doubleBuffer = document.createElement('canvas')
-                doubleBufferG = doubleBuffer.getContext('2d')
-                width = imageToConvolve.clientWidth
-                height = imageToConvolve.clientHeight
-                canvas.width = width
-                canvas.height = height
-                doubleBuffer.width = width
-                doubleBuffer.height = height
+// handle mousedown events
+// iterate through texts[] and see if the user
+// mousedown'ed on one of them
+// If yes, set the selectedText to the index of that text
+function handleMouseDown(e) {
+    e.preventDefault();
+    startX = parseInt(e.clientX - offsetX);
+    startY = parseInt(e.clientY - offsetY);
 
-                convolutionMatrix = blurConvolutionMatrix /* select which convolution to use */
+    // Put your mousedown stuff here
+    for (let i = 0; i < texts.length; i++) {
+        if (textHittest(startX, startY, i)) {
+            $('#canvas').css('cursor','pointer');
+            selectedText = i;
+        }
+    }
+}
 
-                renderCanvas()
-            }
+// done dragging
+function handleMouseUp(e) {
+    e.preventDefault();
+    selectedText = -1;
+    $('#canvas').css('cursor','auto');
+}
 
+// also done dragging
+function handleMouseOut(e) {
+    e.preventDefault();
+    selectedText = -1;
+}
 
-            function renderCanvas()
-            {
-                // draw the original image into the double buffer
-                doubleBufferG.drawImage(imageToConvolve, 0, 0, width, height)
+// handle mousemove events
+// calc how far the mouse has been dragged since
+// the last mousemove event and move the selected text
+// by that distance
+function handleMouseMove(e) {
+    if (selectedText < 0) {
+        return;
+    }
+    e.preventDefault();
+    mouseX = parseInt(e.clientX - offsetX);
+    mouseY = parseInt(e.clientY - offsetY);
 
-                // get the image data (i.e. the pixels) from the double buffer
-                imageData = doubleBufferG.getImageData(0, 0, width, height)
-                data = imageData.data
+    // Put your mousemove stuff here
+    let dx = mouseX - startX;
+    let dy = mouseY - startY;
+    startX = mouseX;
+    startY = mouseY;
 
-                convolutionAmount = 0
-                for (let j = 0; j < 9; j++)
-                {
-                    convolutionAmount += convolutionMatrix[j]
-                }
+    let text = texts[selectedText];
+    text.x += dx;
+    text.y += dy;
+    draw();
+}
 
-                originalImageData = doubleBufferG.getImageData(0, 0, width, height)
-                originalData = originalImageData.data
+// listen for mouse events
+$("#canvas").mousedown(function (e) {
+    handleMouseDown(e);
+});
+$("#canvas").mousemove(function (e) {
+    handleMouseMove(e);
+});
+$("#canvas").mouseup(function (e) {
+    handleMouseUp(e);
+});
+$("#canvas").mouseout(function (e) {
+    handleMouseOut(e);
+});
+    </script> 
+  <body>
+    <h4>Drag the text</h4>
 
+    <canvas id="canvas" width=321 height=204></canvas>
+    
+  
+  </body>
 
-                for (let i = 0; i < data.length; i += 4)
-                {
-                    data[ i + 3] = 255 // alpha
-
-                    // apply the convolution for each of red, green and blue
-                    for (let rgbOffset = 0; rgbOffset < 3; rgbOffset++)
-                    {
-                        // get the pixel and its eight sourrounding pixel values from the original image 
-                        let convolutionPixels = [originalData[i + rgbOffset - width * 4 - 4],
-                            originalData[i + rgbOffset - width * 4],
-                            originalData[i + rgbOffset - width * 4 + 4],
-                            originalData[i + rgbOffset - 4],
-                            originalData[i + rgbOffset],
-                            originalData[i + rgbOffset + 4],
-                            originalData[i + rgbOffset + width * 4 - 4],
-                            originalData[i + rgbOffset + width * 4],
-                            originalData[i + rgbOffset + width * 4 + 4]]
-
-                        // do the convolution
-                        convolvedPixel = 0
-                        for (let j = 0; j < 9; j++)
-                        {
-                            convolvedPixel += convolutionPixels[j] * convolutionMatrix[j]
-                        }
-
-                        // place the convolved pixel in the double buffer		 
-                        if (convolutionMatrix === blurConvolutionMatrix) // embossed is treated differently
-                        {
-                            data[i + rgbOffset] = convolvedPixel + 127
-                        }
-                        else
-                        {
-                            convolvedPixel /= convolutionAmount
-                            data[i + rgbOffset] = convolvedPixel
-                        }
-                    }
-                }
-
-                // Draw the imageData onto the canvas
-                ctx.putImageData(imageData, 0, 0)
-            }
-        </script>
-    </head>
-
-    <body>
-        <img id = 'imageToConvolve' src = 'images/hulk.jpg'>
-        <canvas id = 'canvas'></canvas>
-    </body>
 </html>
